@@ -1,0 +1,38 @@
+name: CI/CD Pipeline FFEOE
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. Checkout del repositorio
+    - name: Checkout del código
+      uses: actions/checkout@v4
+
+    # 2. Configurar Node y Compilación
+    - name: Configurar Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+
+    - name: Instalar dependencias y Compilar
+      run: |
+        npm install
+        npm run build
+
+    # 3. Ejecución de pruebas automáticas
+    - name: Ejecutar Tests
+      run: npm test
+
+    # 4. Construcción de imagen Docker
+    - name: Build Docker Image
+      run: docker build -t ffeoe-app .
+
+    # 5. Despliegue automático (En Render es automático por Webhook)
+    - name: Deploy to Render
+      run: echo "El despliegue se activa automáticamente vía Render-GitHub Integration"
