@@ -3,29 +3,41 @@ name: CI/CD Pipeline FFEOE
 on:
   push:
     branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
 
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
     steps:
+    # 1. Checkout del repositorio
     - name: Checkout del código
       uses: actions/checkout@v4
 
+    # 2. Configurar el entorno de Node.js
     - name: Configurar Node.js
       uses: actions/setup-node@v4
       with:
         node-version: '20'
 
+    # 3. Instalar todas las dependencias (incluyendo Jest para los tests)
     - name: Instalar dependencias
       run: npm install
 
-    - name: Compilar App
+    # 4. Compilación de la aplicación (Punto 4.2 del ejercicio)
+    - name: Compilar App (TypeScript)
       run: npm run build
 
+    # 5. Ejecución de pruebas automáticas (Punto 4.3 del ejercicio)
     - name: Ejecutar Tests
-      # Usamos || true para que el pipeline siga aunque no encuentre tests reales todavía
-      run: npm test || echo "No hay tests configurados, saltando paso..."
+      run: npm test
 
+    # 6. Construcción de imagen Docker (Punto 4.4 del ejercicio)
     - name: Construir Imagen Docker
       run: docker build -t ffeoe-app .
+
+    # 7. Despliegue (Punto 4.5) 
+    # En Render, el despliegue es automático al detectar el push en GitHub
+    - name: Estado del Despliegue
+      run: echo "Pipeline completado. Render iniciará el despliegue automáticamente."
